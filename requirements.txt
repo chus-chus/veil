@@ -1,0 +1,8 @@
+pyyaml
+uvicorn
+fastapi
+pydantic
+matplotlib
+gliner
+spacy
+hf_transfer

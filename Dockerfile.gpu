@@ -1,0 +1,55 @@
+FROM nvidia/cuda:12.6.2-cudnn-runtime-ubuntu22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    HF_HOME=/models/.cache \
+    HF_HUB_ENABLE_HF_TRANSFER=1 \
+    TRANSFORMERS_CACHE=/models/.cache
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash curl ca-certificates git && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+RUN mkdir -p /models/.cache
+
+# Install Miniforge (mamba + conda)
+RUN curl -L -o /tmp/miniforge.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" && \
+    bash /tmp/miniforge.sh -b -p /opt/conda && \
+    rm -f /tmp/miniforge.sh
+ENV PATH=/opt/conda/bin:$PATH
+
+# Create Python 3.12 environment with mamba
+RUN mamba create -y -n veil -c conda-forge python=3.12 && \
+    mamba clean -a -y
+
+# Copy source code
+COPY . .
+
+# Ensure local packages are importable at runtime
+ENV PYTHONPATH=/app
+
+# Make container entrypoint executable
+RUN chmod +x scripts/entrypoint.sh
+
+# Provide a default config inside the image (can be overridden by a bind mount)
+RUN mkdir -p /app/config && \
+    cp run_configs/online_multi_detector.yml /app/config/pipeline.yml
+
+# Install project dependencies within Python 3.12 env using the repo's setup script
+RUN mamba run -n veil bash scripts/setup_env.sh --gpu
+
+# Create non-root user
+RUN useradd -m app && chown -R app:app /app /models
+USER app
+
+EXPOSE 8000
+
+# Persist Hugging Face cache between runs by default (can be overridden)
+VOLUME ["/models"]
+
+# Expect config mounted at /app/config/pipeline.yml (overrides baked one)
+CMD ["bash", "scripts/entrypoint.sh"]

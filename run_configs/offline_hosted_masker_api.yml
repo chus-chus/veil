@@ -1,0 +1,41 @@
+mode: offline
+
+datahandler:
+  input_path: data/input/sample.jsonl
+  output_path: data/output/sample_masked.jsonl
+  text_field: text
+  ground_truth_field: ground_truth
+  doc_id_field: doc_id
+
+entity_detectors:
+  - type: HOSTED_MASKER_API
+    api_url: https://api.fireworks.ai/inference/v1/chat/completions
+    model: accounts/sample/model-name
+    timeout: 120
+    headers: { "Accept": "application/json", "Content-Type": "application/json", "Authorization": "Bearer <token>"}
+    system_prompt: >
+      Please anonymize the following text:
+
+entity_resolvers:
+  - type: embeddings
+    threshold: 0.82
+
+masker:
+  method: ENTITY_TAG
+
+metric_store:
+  enabled: true
+  output_dir: veil_runs/eval_set
+  save_config_json: true
+
+evaluator:
+  enabled: true
+  strict_type: true
+  report_exact: true
+  report_exact_by_id: true
+  use_hungarian_id_mapping: true
+  report_iou_thresholds: [0.25, 0.5, 0.75, 0.9]
+
+concurrency: 1
+
+

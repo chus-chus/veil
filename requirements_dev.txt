@@ -1,0 +1,17 @@
+pytest
+pytest-sugar
+pyyaml>=6
+cmake
+autoflake
+black
+codespell
+isort
+pyright
+ipykernel
+Sphinx>=7
+myst-parser>=2
+sphinx-autodoc-typehints>=2
+sphinx-copybutton>=0.5
+sphinx-rtd-theme>=2
+linkify-it-py>=2
+furo

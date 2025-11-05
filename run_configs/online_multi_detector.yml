@@ -1,0 +1,69 @@
+mode: online
+log_level: info
+
+api_server:
+  host: 0.0.0.0
+  port: 8000
+
+entity_detectors:
+  - type: regex
+    min_confidence: 0.3
+    hierarchy_position: 0
+    priority:
+      DNI: 0
+      CIF: 0
+      NIE: 0
+      NSS: 0
+      EMAIL: 0
+      PHONE: 0
+      IBAN: 0
+      IPV4: 0
+      IPV6: 0
+
+  - type: spacy
+    model: es_core_news_lg
+    cuda_device: 0
+    priority:
+      NAME: 0
+      COMPANY: 1
+      ADDRESS: 0
+
+  - type: gliner
+    hierarchy_position: 2
+    model: urchade/gliner_multi-v2.1
+    labels: ["company"]
+    threshold: 0.4
+    batch_size: 8
+    cuda_device: 0
+    max_length: 384
+    chunk_overlap: 100
+    priority:
+      COMPANY: 0
+      
+overlap_resolver:
+  iou_threshold: 0.2
+  overlap_policy: cross_type
+
+entity_resolvers:
+  - type: embeddings
+    threshold: 0.75
+
+masker:
+  method: ENTITY_TAG
+
+# --- evaluation methods
+
+metric_store:
+  enabled: true
+  output_dir: veil_runs/eval_set
+  save_config_json: true
+
+evaluator:
+  enabled: true
+  strict_type: true
+  report_exact: true
+  report_exact_by_id: true
+  use_hungarian_id_mapping: true
+  report_iou_thresholds: [0.25, 0.5, 0.75, 0.9]
+
+concurrency: 1 # != 1 is unstable for now
