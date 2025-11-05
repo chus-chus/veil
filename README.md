@@ -1,6 +1,6 @@
 # Veil
 
-Veil is a framework for building and running text processing and masking pipelines.
+Veil is a framework for building and running Named Entity Recognition & masking pipelines.
 
 ## Getting Started
 
