@@ -49,7 +49,9 @@ python -m uv pip install -r requirements_dev.txt
 
 ## Documentation
 
-You can extract the most out of Veil when you bring your own entity detectors. To learn how, you can read the documentation. To build it, run:
+You can extract the most out of Veil when you bring your own entity detectors. To learn how, you can read the documentation on [Read the Docs](https://veil-project.readthedocs.io/en/latest/). 
+
+You can also build the documentation by running:
 
 ```bash
 make docs/html
