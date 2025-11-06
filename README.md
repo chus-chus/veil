@@ -2,9 +2,30 @@
 
 Veil is a framework for building and running Named Entity Recognition & masking pipelines.
 
+## Why Veil?
+
+Named Entity Recognition (NER) is the process of identifying and classifying named entities in text (names, organizations, locations, etc.). Although public models and techniques perform well, a production-ready NER system can be comprised of many components, not just a standalone model. Veil provides a framework to build and run production-tested NER pipelines with many different components. It offers primitives for defining a pipeline that may include:
+
+- Multiple entity detectors that identify entities in the text, extracting the most out of many different NER techniques and models
+- Entity resolvers that resolve entities to a single canonical form
+- Overlap resolvers that resolve overlaps between entities
+- Maskers that mask the entities in the text for privacy-focused use cases
+- Evaluators that exhaustively measure the pipeline, both in quality of detection and system performance
+
+Veil can be deployed in `online` mode as an API server, or in `offline` mode as a batch processor.
+
 ## Getting Started
 
+First, clone the repository:
+
+```bash
+git clone https://github.com/chus-chus/veil.git
+cd veil
+```
+
 ### Environment setup (supports all included entity detectors)
+
+First, install `make` and `mamba` if you don't have them already. Then, build the environment:
 
 ```bash
 make build
@@ -16,14 +37,14 @@ activate the environment with:
 mamba activate ./env
 ```
 
-Note that you will need CUDA for GPU model execution. If not available, veil will fall back to CPU execution.
+Note that you will need CUDA for GPU model execution. If not available, Veil will fall back to CPU execution.
 
 ### Development packages
 
 You may also need development requirements (build documentation, run tests, etc.). Inside the environment:
 
 ```bash
-python3 -m pip install -r requirements_dev.txt
+python -m uv pip install -r requirements_dev.txt
 ```
 
 ## Documentation
@@ -48,7 +69,7 @@ Veil is highly configurable. All configuration classes, defined in `veil/config`
 You can see the available options with:
 
 ```bash
-python3 -m veil --help
+python -m veil --help
 ```
 
 ## Run from a file
@@ -67,7 +88,7 @@ entity_detectors:
 And run:
 
 ```bash
-python3 -m veil --pipeline-config-from-file run_configs/example_offline.yml
+python -m veil --pipeline-config-from-file run_configs/example_offline.yml
 ```
 
 Input data must contain at least an `input` field with the text to process.
